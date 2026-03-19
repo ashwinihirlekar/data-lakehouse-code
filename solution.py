@@ -1,38 +1,46 @@
-def bubble_sort(arr):
-    n = len(arr)
-    for i in range(n):
-        for j in range(0, n-i-1):
-            if arr[j] > arr[j+1]:
-                arr[j], arr[j+1] = arr[j+1], arr[j]
-    return arr
+#constants for integers
+VOLUME_LIMIT :int = 1000000
+DIMENSION_LIMIT :int = 150
+MASS_LIMIT :int = 20
 
-def quick_sort(arr):
-    if len(arr) <= 1:
-        return arr
-    pivot = arr[len(arr) // 2]
-    left = [x for x in arr if x < pivot]
-    middle = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quick_sort(left) + middle + quick_sort(right)
+#constants for strings
+STANDARD :str = "STANDARD"
+SPECIAL :str = "SPECIAL"
+REJECTED :str = "REJECTED"
 
-def merge_sort(arr):
-    if len(arr) <= 1:
-        return arr
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
-    return merge(left, right)
+def sort(width :float, height :float, length :float, mass :float) -> str:
+    """Program to sort the packages into correct stack based on their volume and mass.
+    Args:
+    width (float): Package width in centimeters.
+    height (float): Package height in centimeters.
+    length (float): Package length in centimeters.
+    mass (float): Package mass in kilograms.
 
-def merge(left, right):
-    result = []
-    i = j = 0
-    while i < len(left) and j < len(right):
-        if left[i] < right[j]:
-            result.append(left[i])
-            i += 1
-        else:
-            result.append(right[j])
-            j += 1
-    result.extend(left[i:])
-    result.extend(right[j:])
-    return result
+    Returns:
+    str: One of "STANDARD", "SPECIAL", or "REJECTED".
+    """
+
+    # validate all the inputs for quality checks
+    for arg in (width, height, length, mass):
+        if not isinstance(arg, (int,float)):
+            raise ValueError("All inputs must be numbers")
+        if arg <= 0:
+            raise ValueError("All inputs must be greater than 0")
+
+    total_volume = width * height * length
+    bulky :bool = False
+    heavy :bool = False
+
+    if total_volume >= VOLUME_LIMIT or max(width, height, length) >= DIMENSION_LIMIT :
+        bulky = True
+    if mass >= MASS_LIMIT:
+        heavy = True
+
+    if bulky and heavy:
+        return REJECTED
+    if bulky or heavy:
+        return SPECIAL
+    return STANDARD
+
+if __name__ == '__main__':
+    print(sort(100, 200, 100, 10))
